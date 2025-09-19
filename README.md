@@ -1,4 +1,4 @@
-# Orion Variate
+# Orion Accessor
 
 [![CI](https://github.com/galaxy-sec/orion-accessor/workflows/CI/badge.svg)](https://github.com/galaxy-sec/orion-accessor/actions)
 [![Coverage Status](https://codecov.io/gh/galaxy-sec/orion-accessor/branch/main/graph/badge.svg)](https://codecov.io/gh/galaxy-sec/orion-accessor)
@@ -108,7 +108,3 @@ cargo test addr::redirect
 ## 📄 许可证
 
 MIT License - 详见 [LICENSE](LICENSE) 文件
-
-## 🤝 贡献
-
-欢迎提交Issue和Pull Request！请阅读我们的[贡献指南](CONTRIBUTING.md)了解详情。
