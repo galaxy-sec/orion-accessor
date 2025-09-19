@@ -1257,7 +1257,7 @@ dependencies = [
 
 [[package]]
 name = "orion-accessor"
-version = "0.9.4"
+version = "0.5.1"
 dependencies = [
  "anyhow",
  "async-trait",
