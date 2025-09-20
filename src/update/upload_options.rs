@@ -1,4 +1,4 @@
-use crate::predule::*;
+use crate::prelude::*;
 use std::str::FromStr;
 
 /// HTTP methods supported for upload operations

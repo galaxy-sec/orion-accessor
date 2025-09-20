@@ -1,4 +1,4 @@
-use crate::predule::*;
+use crate::prelude::*;
 use serde_derive::{Deserialize, Serialize};
 use wildmatch::WildMatch;
 

@@ -1,4 +1,4 @@
-use orion_res::archive::compress;
+use orion_accessor::archive::compress;
 use std::fs;
 
 use tempfile::tempdir;

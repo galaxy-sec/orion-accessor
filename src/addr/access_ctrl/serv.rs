@@ -1,4 +1,4 @@
-use crate::predule::*;
+use crate::prelude::*;
 use std::{path::PathBuf, rc::Rc};
 
 use orion_conf::Yamlable;
@@ -115,7 +115,7 @@ impl TryFrom<&PathBuf> for NetAccessCtrl {
     type Error = AddrError;
 
     fn try_from(value: &PathBuf) -> Result<Self, Self::Error> {
-        NetAccessCtrl::from_yml(value).owe_res().with(value)
+        NetAccessCtrl::load_yaml(value).owe_res().with(value)
     }
 }
 
@@ -360,7 +360,7 @@ enable: false
         let original_serv = NetAccessCtrl::new(vec![unit], true);
 
         // 写入文件
-        original_serv.save_yml(&file_path).unwrap();
+        original_serv.save_yaml(&file_path).unwrap();
 
         // 从文件读取
         let loaded_serv = NetAccessCtrl::try_from(&file_path).unwrap();

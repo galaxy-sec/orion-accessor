@@ -1,4 +1,4 @@
-use orion_res::{
+use orion_accessor::{
     addr::{Address, HttpResource, accessor::HttpAccessor},
     types::ResourceDownloader,
     update::DownloadOptions,

@@ -2,7 +2,7 @@ use crate::addr::access_ctrl::serv::NetAccessCtrl;
 use crate::addr::{AddrReason, AddrResult, Address, GitRepository};
 use crate::update::UploadOptions;
 use crate::{
-    predule::*,
+    prelude::*,
     tools::get_repo_name,
     types::{ResourceDownloader, ResourceUploader},
     update::DownloadOptions,

@@ -1,5 +1,5 @@
 use crate::addr::{AddrReason, AddrResult, Address};
-use crate::predule::*;
+use crate::prelude::*;
 use crate::types::ResourceDownloader;
 use crate::update::{DownloadOptions, UploadOptions};
 use contracts::debug_requires;

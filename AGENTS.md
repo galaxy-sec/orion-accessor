@@ -1,38 +1,19 @@
 # Repository Guidelines
 
-## Project Structure & Modules
-- `src/`: library code. Key modules: `addr/` (HTTP/Git/local access, redirect), `tpl/` (templating), `vars/` (variable resolution), `update/` (download/update ops), `archive.rs`, `timeout.rs`, `types.rs`, `tools.rs`.
-- `tests/`: integration tests (e.g., `git_test.rs`, `http_test.rs`) with fixtures in `tests/data/`.
-- `examples/`: runnable examples (e.g., `compress_demo.rs`).
-- `docs/`: usage and design notes (e.g., `redirect-rules.md`, `net-access-ctrl-guide.md`).
-- `tasks/`: design/engineering notes used during development.
+## Project Structure & Module Organization
+Source lives in `src/`, with `addr/` managing HTTP, Git, and local lookups plus redirect rules, `tpl/` for templating, `vars/` for variable resolution, and `update/` for download flows; shared helpers sit alongside as `archive.rs`, `timeout.rs`, `types.rs`, and `tools.rs`. Integration tests and fixtures reside in `tests/` (e.g., `git_test.rs`, `data/`), runnable examples are in `examples/` such as `compress_demo.rs`, longer-form notes live in `docs/`, and planning artefacts are kept in `tasks/`.
 
-## Build, Test, and Development
-- Build: `cargo build` (debug) | `cargo build --release` (optimized).
-- Test: `cargo test -- --test-threads=1` (matches CI; avoids flaky network-bound tests).
-- Lint/format: `cargo fmt --all -- --check` and `cargo clippy --all-targets --all-features -- -D warnings`.
-- Coverage: `cargo llvm-cov --all-features --workspace -- --test-threads=1` (install via `cargo install cargo-llvm-cov`).
-- Security audit: `cargo audit` (optional; install via `cargo install cargo-audit`).
-- Run example: `cargo run --example compress_demo`.
+## Build, Test, and Development Commands
+Use `cargo build` for debug builds and `cargo build --release` before benchmarking or publishing. Run `cargo test -- --test-threads=1` to mirror CI behaviour, keeping network-heavy scenarios stable. Lint and formatting gates are `cargo fmt --all -- --check` plus `cargo clippy --all-targets --all-features -- -D warnings`. For coverage snapshots, run `cargo llvm-cov --all-features --workspace -- --test-threads=1`. Inspect example behaviour with `cargo run --example compress_demo`.
 
-## Coding Style & Naming
-- Format with `rustfmt` (4-space indent, edition from `Cargo.toml`).
-- Keep `clippy` clean; warnings are CI failures.
-- Naming: modules/files `snake_case`; types/traits/enums `UpperCamelCase`; functions/vars `snake_case`; constants `SCREAMING_SNAKE_CASE`.
-- Errors: prefer `thiserror` for custom types; avoid `unwrap/expect` outside tests/examples; return `Result<_, orion_error::Error>` or `anyhow::Result` where appropriate.
-- Concurrency: prefer `tokio` primitives for async code.
+## Coding Style & Naming Conventions
+Stick to Rust edition settings in `Cargo.toml` and apply `rustfmt`’s 4-space indentation. Modules and files use `snake_case`, types and traits take `UpperCamelCase`, functions and variables stay `snake_case`, and constants are `SCREAMING_SNAKE_CASE`. Prefer `thiserror` for error enums, return `Result<_, orion_error::Error>` or `anyhow::Result`, avoid `unwrap`/`expect` outside tests and examples, and reach for `tokio` primitives when async coordination is required.
 
 ## Testing Guidelines
-- Frameworks: `tokio` async tests, `rstest` for parameterized cases, `mockito` for HTTP mocking.
-- Locations: unit tests inline (`mod tests`) and integration tests in `tests/` named `*_test.rs`.
-- Network I/O: avoid external calls; use mocks. If unavoidable, respect proxies: `HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY` (see comments in `tests/git_test.rs`).
-- Temp files: use `tempfile` and clean up after tests.
+Inline unit tests live beside the code (`mod tests`), while broader scenarios belong in `tests/` named `*_test.rs`. Compose async tests with `tokio::test`, parameterise cases via `rstest`, and stub HTTP with `mockito`. Respect proxy variables (`HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY`) when exercising Git or HTTP paths, and rely on `tempfile` for ephemeral resources. Keep coverage meaningful by running `cargo llvm-cov` before substantial refactors.
 
 ## Commit & Pull Request Guidelines
-- Commits: imperative, focused, and descriptive (e.g., "Add Git accessor proxy support"); reference issues (`#123`) when relevant.
-- Before opening a PR: ensure `cargo fmt`, `cargo clippy`, and `cargo test` pass; include a clear summary, rationale, and usage notes; update `docs/` or `examples/` if APIs change.
-- CI mirrors these checks and runs on Linux/macOS with stable/beta toolchains.
+Format commits imperatively and keep them focused (e.g., "Add Git accessor proxy support"); reference issues like `#123` when relevant. Before opening a PR, confirm `cargo fmt`, `cargo clippy`, and `cargo test -- --test-threads=1` succeed, document API-facing changes in `docs/` or `examples/`, and provide a summary that calls out impact, validation steps, and any follow-up TODOs. CI mirrors these checks on stable and beta toolchains across Linux and macOS.
 
-## Security & Config Tips
-- Never commit secrets. CI uses repository secrets (e.g., `CRATES_IO_TOKEN`, `GITHUB_TOKEN`).
-- For local proxy-enabled development or tests, set `HTTP(S)_PROXY`/`ALL_PROXY` as needed.
+## Security & Configuration Tips
+Never commit secrets—CI supplies tokens such as `CRATES_IO_TOKEN` or `GITHUB_TOKEN`. When testing through restricted networks, set `HTTP(S)_PROXY` or `ALL_PROXY` to match local policy, and include proxy considerations in docs or PR notes when behaviour differs. Remove temporary credentials or debug logging before merging.

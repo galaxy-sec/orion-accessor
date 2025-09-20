@@ -1,4 +1,4 @@
-use crate::predule::*;
+use crate::prelude::*;
 
 use getset::{Getters, Setters, WithSetters};
 use url::Url;
@@ -60,7 +60,7 @@ pub fn filename_of_url(url: &str) -> Option<String> {
 }
 
 #[cfg(test)]
-mod tests2 {
+mod tests {
     use super::*;
 
     #[test]

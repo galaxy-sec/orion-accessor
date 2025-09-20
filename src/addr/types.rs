@@ -1,4 +1,4 @@
-use crate::predule::*;
+use crate::prelude::*;
 use derive_more::{Display, From};
 
 use super::{GitRepository, HttpResource, LocalPath};

@@ -1,4 +1,4 @@
-use crate::predule::*;
+use crate::prelude::*;
 use getset::{Getters, Setters, WithSetters};
 use home::home_dir;
 
@@ -13,8 +13,9 @@ use home::home_dir;
 #[serde(rename = "git")]
 pub struct GitRepository {
     repo: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    res: Option<String>,
+    /// 额外资源标识，例如特定子模块或配置文件
+    #[serde(rename = "res", skip_serializing_if = "Option::is_none")]
+    resource: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     tag: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -46,7 +47,7 @@ impl EnvEvalable<GitRepository> for GitRepository {
     fn env_eval(self, dict: &EnvDict) -> GitRepository {
         Self {
             repo: self.repo.env_eval(dict),
-            res: self.res.env_eval(dict),
+            resource: self.resource.env_eval(dict),
             tag: self.tag.env_eval(dict),
             branch: self.branch.env_eval(dict),
             rev: self.rev.env_eval(dict),
@@ -60,27 +61,32 @@ impl EnvEvalable<GitRepository> for GitRepository {
 }
 
 impl GitRepository {
+    fn set_option_field(
+        mut self,
+        slot: impl FnOnce(&mut Self) -> &mut Option<String>,
+        value: Option<String>,
+    ) -> Self {
+        *slot(&mut self) = value;
+        self
+    }
+
     pub fn from<S: Into<String>>(repo: S) -> Self {
         Self {
             repo: repo.into(),
             ..Default::default()
         }
     }
-    pub fn with_tag<S: Into<String>>(mut self, tag: S) -> Self {
-        self.tag = Some(tag.into());
-        self
+    pub fn with_tag<S: Into<String>>(self, tag: S) -> Self {
+        self.with_opt_tag(Some(tag.into()))
     }
-    pub fn with_opt_tag(mut self, tag: Option<String>) -> Self {
-        self.tag = tag;
-        self
+    pub fn with_opt_tag(self, tag: Option<String>) -> Self {
+        self.set_option_field(|repo| &mut repo.tag, tag)
     }
-    pub fn with_branch<S: Into<String>>(mut self, branch: S) -> Self {
-        self.branch = Some(branch.into());
-        self
+    pub fn with_branch<S: Into<String>>(self, branch: S) -> Self {
+        self.with_opt_branch(Some(branch.into()))
     }
-    pub fn with_opt_branch(mut self, branch: Option<String>) -> Self {
-        self.branch = branch;
-        self
+    pub fn with_opt_branch(self, branch: Option<String>) -> Self {
+        self.set_option_field(|repo| &mut repo.branch, branch)
     }
     pub fn with_rev<S: Into<String>>(mut self, rev: S) -> Self {
         self.rev = Some(rev.into());
@@ -101,59 +107,55 @@ impl GitRepository {
         self
     }
     // 新增：设置Token认证
-    pub fn with_token<S: Into<String>>(mut self, token: S) -> Self {
-        self.token = Some(token.into());
-        self
+    pub fn with_token<S: Into<String>>(self, token: S) -> Self {
+        self.with_opt_token(Some(token.into()))
     }
     // 新增：设置用户名（用于Token认证）
-    pub fn with_username<S: Into<String>>(mut self, username: S) -> Self {
-        self.username = Some(username.into());
-        self
+    pub fn with_username<S: Into<String>>(self, username: S) -> Self {
+        self.with_opt_username(Some(username.into()))
     }
     // 新增：设置Token认证（可选）
-    pub fn with_opt_token(mut self, token: Option<String>) -> Self {
-        self.token = token;
-        self
+    pub fn with_opt_token(self, token: Option<String>) -> Self {
+        self.set_option_field(|repo| &mut repo.token, token)
     }
     // 新增：设置用户名（可选）
-    pub fn with_opt_username(mut self, username: Option<String>) -> Self {
-        self.username = username;
-        self
+    pub fn with_opt_username(self, username: Option<String>) -> Self {
+        self.set_option_field(|repo| &mut repo.username, username)
     }
 
     /// 为GitHub设置Token认证（便捷方法）
     /// GitHub使用用户名+Token作为密码的方式
-    pub fn with_github_token<S: Into<String>>(mut self, token: S) -> Self {
-        self.username = Some("git".to_string());
-        self.token = Some(token.into());
-        self
+    pub fn with_github_token<S: Into<String>>(self, token: S) -> Self {
+        let token = token.into();
+        self.with_opt_username(Some("git".to_string()))
+            .with_opt_token(Some(token))
     }
 
     /// 为GitLab设置Token认证（便捷方法）
     /// GitLab可以使用"oauth2"作为用户名，Token作为密码
-    pub fn with_gitlab_token<S: Into<String>>(mut self, token: S) -> Self {
-        self.username = Some("oauth2".to_string());
-        self.token = Some(token.into());
-        self
+    pub fn with_gitlab_token<S: Into<String>>(self, token: S) -> Self {
+        let token = token.into();
+        self.with_opt_username(Some("oauth2".to_string()))
+            .with_opt_token(Some(token))
     }
 
     /// 为Gitea设置Token认证（便捷方法）
     /// Gitea可以使用Token作为密码
-    pub fn with_gitea_token<S: Into<String>>(mut self, token: S) -> Self {
-        self.username = Some("git".to_string());
-        self.token = Some(token.into());
-        self
+    pub fn with_gitea_token<S: Into<String>>(self, token: S) -> Self {
+        let token = token.into();
+        self.with_opt_username(Some("git".to_string()))
+            .with_opt_token(Some(token))
     }
 
     /// 从环境变量读取Token认证
     ///
     /// # Arguments
     /// * `env_var` - 环境变量名，例如 "GITHUB_TOKEN"
-    pub fn with_env_token(mut self, env_var: &str) -> Self {
-        if let Ok(token) = std::env::var(env_var) {
-            self.token = Some(token);
+    pub fn with_env_token(self, env_var: &str) -> Self {
+        match std::env::var(env_var) {
+            Ok(token) => self.with_opt_token(Some(token)),
+            Err(_) => self,
         }
-        self
     }
 
     /// 从环境变量读取GitHub Token认证
@@ -162,12 +164,13 @@ impl GitRepository {
     }
 
     /// 从环境变量读取GitLab Token认证
-    pub fn with_gitlab_env_token(mut self) -> Self {
-        if let Ok(token) = std::env::var("GITLAB_TOKEN") {
-            self.username = Some("oauth2".to_string());
-            self.token = Some(token);
+    pub fn with_gitlab_env_token(self) -> Self {
+        match std::env::var("GITLAB_TOKEN") {
+            Ok(token) => self
+                .with_opt_username(Some("oauth2".to_string()))
+                .with_opt_token(Some(token)),
+            Err(_) => self,
         }
-        self
     }
 
     /// 从环境变量读取Gitea Token认证
@@ -180,8 +183,9 @@ impl GitRepository {
         if let Some(credentials) = Self::read_git_credentials() {
             for (url, username, token) in credentials {
                 if self.repo.starts_with(&url) {
-                    self.username = Some(username);
-                    self.token = Some(token);
+                    self = self
+                        .with_opt_username(Some(username))
+                        .with_opt_token(Some(token));
                     break;
                 }
             }
@@ -190,44 +194,42 @@ impl GitRepository {
     }
     /// 读取~/.git-credentials文件
     pub fn read_git_credentials() -> Option<Vec<(String, String, String)>> {
+        let home = home_dir()?;
+        let credentials_path = home.join(".git-credentials");
+        Self::read_git_credentials_at(&credentials_path)
+    }
+
+    fn read_git_credentials_at(path: &Path) -> Option<Vec<(String, String, String)>> {
         use std::fs;
         use std::io::{BufRead, BufReader};
 
-        let home = home_dir()?;
-        let credentials_path = home.join(".git-credentials");
-
-        if !credentials_path.exists() {
+        if !path.exists() {
             return None;
         }
 
-        let file = fs::File::open(credentials_path).ok()?;
+        let file = fs::File::open(path).ok()?;
         let reader = BufReader::new(file);
         let mut credentials = Vec::new();
 
         for line in reader.lines().map_while(Result::ok) {
-            //if let Ok(line) = line {
             let line = line.trim();
             if line.is_empty() || line.starts_with('#') {
                 continue;
             }
 
-            // 使用URL解析来正确提取各个部分
             if let Ok(url) = url::Url::parse(line) {
                 let host = url.host_str()?;
                 let scheme = url.scheme();
                 let path = url.path();
 
-                // 构建基础URL用于匹配
                 let base_url = format!("{scheme}://{host}{path}");
 
-                // 提取用户名和密码
                 let username = url.username();
                 if !username.is_empty()
                     && let Some(password) = url.password()
                 {
                     credentials.push((base_url, username.to_string(), password.to_string()));
                 }
-                //}
             }
         }
 
@@ -438,48 +440,11 @@ mod tests {
         fn read_git_credentials_from_path(
             path: &std::path::Path,
         ) -> Option<Vec<(String, String, String)>> {
-            use std::fs;
-            use std::io::{BufRead, BufReader};
-
-            if !path.exists() {
-                return None;
-            }
-
-            let file = fs::File::open(path).ok()?;
-            let reader = BufReader::new(file);
-            let mut credentials = Vec::new();
-
-            for line in reader.lines().map_while(Result::ok) {
-                let line = line.trim();
-                if line.is_empty() || line.starts_with('#') {
-                    continue;
-                }
-
-                if let Ok(url) = url::Url::parse(line) {
-                    let host = url.host_str()?;
-                    let scheme = url.scheme();
-                    let path = url.path();
-
-                    let base_url = format!("{scheme}://{host}{path}");
-
-                    let username = url.username();
-                    if !username.is_empty()
-                        && let Some(password) = url.password()
-                    {
-                        credentials.push((base_url, username.to_string(), password.to_string()));
-                    }
-                }
-            }
-
-            if credentials.is_empty() {
-                None
-            } else {
-                Some(credentials)
-            }
+            Self::read_git_credentials_at(path)
         }
 
         fn with_git_credentials_from_path(mut self, path: &std::path::Path) -> Self {
-            if let Some(credentials) = Self::read_git_credentials_from_path(path) {
+            if let Some(credentials) = Self::read_git_credentials_at(path) {
                 for (url, username, token) in credentials {
                     if self.repo.starts_with(&url) {
                         self.username = Some(username);

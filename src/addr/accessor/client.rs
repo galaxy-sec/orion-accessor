@@ -1,10 +1,11 @@
 use std::time::Duration;
 
-use crate::addr::access_ctrl::UnitCtrl;
+use crate::addr::{AddrReason, AddrResult, access_ctrl::UnitCtrl};
+use orion_error::{ToStructError, UvsResFrom};
 
 use reqwest::{ClientBuilder, Proxy};
 
-pub fn create_http_client_by_ctrl(ctrl: Option<UnitCtrl>) -> reqwest::Client {
+pub fn create_http_client_by_ctrl(ctrl: Option<UnitCtrl>) -> AddrResult<reqwest::Client> {
     // 使用 UnitCtrl 中的超时配置创建客户端
     let mut builder = if let Some(timeout) = ctrl.as_ref().and_then(|x| x.timeout().clone()) {
         ClientBuilder::new()
@@ -23,9 +24,9 @@ pub fn create_http_client_by_ctrl(ctrl: Option<UnitCtrl>) -> reqwest::Client {
             tracing::warn!("无效的代理设置: {}", proxy.url());
         }
     }
-    builder.build().unwrap_or_else(|e| {
+    builder.build().map_err(|e| {
         tracing::error!("创建HTTP客户端失败: {}", e);
-        reqwest::Client::new()
+        AddrReason::from_res(format!("create HTTP client failed: {e}")).to_err()
     })
 }
 
@@ -39,8 +40,8 @@ mod tests {
     #[test]
     fn test_create_http_client_by_ctrl_none() {
         // 测试当传入None时，应创建默认客户端
-        let _client = create_http_client_by_ctrl(None);
-        // 只要不panic就说明创建成功
+        let client = create_http_client_by_ctrl(None);
+        assert!(client.is_ok());
     }
 
     #[test]
@@ -48,8 +49,8 @@ mod tests {
         // 测试超时配置是否正确应用
         let timeout_config = TimeoutConfig::http_simple();
         let unit_ctrl = UnitCtrl::new(None, Some(timeout_config), None);
-        let _client = create_http_client_by_ctrl(Some(unit_ctrl));
-        // 只要不panic就说明创建成功
+        let client = create_http_client_by_ctrl(Some(unit_ctrl));
+        assert!(client.is_ok());
     }
 
     #[test]
@@ -57,8 +58,8 @@ mod tests {
         // 测试代理配置是否正确应用
         let proxy_config = ProxyConfig::new("http://proxy.example.com:8080");
         let unit_ctrl = UnitCtrl::new(None, None, Some(proxy_config));
-        let _client = create_http_client_by_ctrl(Some(unit_ctrl));
-        // 只要不panic就说明创建成功
+        let client = create_http_client_by_ctrl(Some(unit_ctrl));
+        assert!(client.is_ok());
     }
 
     #[test]
@@ -66,8 +67,9 @@ mod tests {
         // 测试无效代理配置的情况
         let proxy_config = ProxyConfig::new(""); // 空URL应该是无效的
         let unit_ctrl = UnitCtrl::new(None, None, Some(proxy_config));
-        let _client = create_http_client_by_ctrl(Some(unit_ctrl));
+        let client = create_http_client_by_ctrl(Some(unit_ctrl));
         // 即使代理无效也应该创建成功（会记录警告但不会panic）
+        assert!(client.is_ok());
     }
 
     #[test]
@@ -76,7 +78,7 @@ mod tests {
         let timeout_config = TimeoutConfig::http_large_file();
         let proxy_config = ProxyConfig::new("http://proxy.example.com:8080");
         let unit_ctrl = UnitCtrl::new(None, Some(timeout_config), Some(proxy_config));
-        let _client = create_http_client_by_ctrl(Some(unit_ctrl));
-        // 只要不panic就说明创建成功
+        let client = create_http_client_by_ctrl(Some(unit_ctrl));
+        assert!(client.is_ok());
     }
 }

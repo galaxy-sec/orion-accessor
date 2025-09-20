@@ -1,6 +1,6 @@
 use crate::addr::access_ctrl::serv::NetAccessCtrl;
 use crate::addr::{AddrResult, Address};
-use crate::predule::*;
+use crate::prelude::*;
 use crate::types::{ResourceDownloader, ResourceUploader, UpdateUnit};
 use crate::update::{DownloadOptions, UploadOptions};
 use log::error;
@@ -25,7 +25,7 @@ impl UniversalConfig {
     }
     pub fn with_ctrl_file(mut self, path: &Path) -> Self {
         if path.exists() {
-            match NetAccessCtrl::from_yml(path) {
+            match NetAccessCtrl::load_yaml(path) {
                 Ok(redirect) => {
                     self.accs_ctrl = Some(redirect);
                 }

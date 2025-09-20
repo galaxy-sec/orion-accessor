@@ -8,13 +8,13 @@
 // 运行命令：
 // cargo test --test proxy_integration_test
 
-use orion_res::addr::access_ctrl::Rule;
-use orion_res::addr::access_ctrl::serv::NetAccessCtrl;
-use orion_res::addr::accessor::GitAccessor;
-use orion_res::addr::proxy::ProxyConfig;
-use orion_res::addr::{Address, GitRepository};
-use orion_res::types::ResourceDownloader;
-use orion_res::update::DownloadOptions;
+use orion_accessor::addr::access_ctrl::Rule;
+use orion_accessor::addr::access_ctrl::serv::NetAccessCtrl;
+use orion_accessor::addr::accessor::GitAccessor;
+use orion_accessor::addr::proxy::ProxyConfig;
+use orion_accessor::addr::{Address, GitRepository};
+use orion_accessor::types::ResourceDownloader;
+use orion_accessor::update::DownloadOptions;
 
 #[test]
 fn test_git_proxy() {

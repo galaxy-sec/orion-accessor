@@ -1319,7 +1319,7 @@ dependencies = [
 
 [[package]]
 name = "orion-variate"
-version = "0.10.1"
+version = "0.10.2"
 dependencies = [
  "contracts",
  "derive-getters",
@@ -1341,9 +1341,9 @@ dependencies = [
 
 [[package]]
 name = "orion_conf"
-version = "0.2.1"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3f4f2f5da2e4eef0c3b1d73a15cbf2745c9dc4b34ad28e6dbfcf4c351666057b"
+checksum = "223eb4af20821d6a88022b5da48013c990c0447ff82e2b8af2ed10fb0de5bc08"
 dependencies = [
  "derive-getters",
  "derive_more",
@@ -1352,22 +1352,23 @@ dependencies = [
  "serde_derive",
  "serde_yaml",
  "thiserror",
+ "toml",
 ]
 
 [[package]]
 name = "orion_infra"
-version = "0.3.2"
-source = "git+https://github.com/galaxy-sec/orion-infra?tag=v0.3.2#ea91a50b252f5b696d6bac5e341175be54521da8"
+version = "0.4.0"
+source = "git+https://github.com/galaxy-sec/orion-infra?tag=v0.4.0#4c0180347805e18deee5e700fd0f9a8bd50387c0"
 dependencies = [
  "anyhow",
  "derive_more",
  "flexi_logger",
  "log",
  "orion-error",
+ "orion_conf",
  "scopeguard",
  "serde",
  "serde_derive",
- "serde_yaml",
  "thiserror",
  "toml",
 ]

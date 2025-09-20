@@ -1,4 +1,4 @@
-use crate::predule::*;
+use crate::prelude::*;
 use crate::{
     addr::{
         GitRepository, HttpResource,

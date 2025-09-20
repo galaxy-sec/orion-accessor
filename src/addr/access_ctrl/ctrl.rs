@@ -1,4 +1,4 @@
-use crate::predule::*;
+use crate::prelude::*;
 use crate::{
     addr::{access_ctrl::auth::AuthConfig, proxy::ProxyConfig},
     timeout::TimeoutConfig,

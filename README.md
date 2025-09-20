@@ -18,16 +18,9 @@
 ### 地址处理
 - **统一接口**: 统一的地址访问抽象 (AddrAccessor)
 - **多协议支持**: HTTP(S)、Git、本地文件系统
-- **代理支持**: 内置HTTP代理和Git代理配置
+- **健壮客户端**: HTTP 访问在代理或超时配置错误时返回详细 `AddrResult`
+- **Git 构建器**: `GitRepository` 流式 API 支持分支/标签、环境令牌与凭据文件
 
-## 📦 安装
-
-在您的 `Cargo.toml` 中添加：
-
-```toml
-[dependencies]
-orion-accessor = "0.6.0"
-```
 
 ## 🚦 快速开始
 
@@ -74,6 +67,18 @@ units:
 let service = RedirectService::from_str(config)?;
 ```
 
+### Git 仓库下载示例
+
+```rust
+use orion_accessor::addr::{Address, GitRepository, Validate};
+
+let repo = GitRepository::from("https://github.com/user/repo.git")
+    .with_branch("main")
+    .with_git_credentials();
+
+repo.validate()?; // 校验配置是否完整
+```
+
 ### 环境变量使用
 
 ```yaml
@@ -103,6 +108,11 @@ cargo test
 # 运行特定模块测试
 cargo test addr::redirect
 ```
+
+## 🤝 贡献
+
+- 贡献流程与代码规范请见 [`AGENTS.md`](AGENTS.md)
+- 提交 PR 前执行 `cargo fmt`, `cargo clippy --all-targets --all-features -- -D warnings`, `cargo test -- --test-threads=1`
 
 
 ## 📄 许可证

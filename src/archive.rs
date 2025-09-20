@@ -21,7 +21,7 @@ use walkdir::WalkDir;
 ///
 /// # 示例
 /// ```
-/// use orion_res::archive::decompress;
+/// use orion_accessor::archive::decompress;
 ///
 /// // 解压文件并显示进度条
 /// // decompress("archive.tar.gz", "/tmp/extract").unwrap();
@@ -91,7 +91,7 @@ pub fn decompress(archive_path: impl AsRef<Path>, output_dir: impl AsRef<Path>) 
 ///
 /// # 示例
 /// ```
-/// use orion_res::archive::compress;
+/// use orion_accessor::archive::compress;
 ///
 /// // 压缩目录并显示进度条
 /// // compress("/path/to/source", "/path/to/archive.tar.gz").unwrap();

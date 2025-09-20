@@ -3,7 +3,7 @@
 pub mod addr;
 pub mod archive;
 pub mod opt;
-mod predule;
+mod prelude;
 pub mod timeout;
 pub mod tools;
 pub mod types;

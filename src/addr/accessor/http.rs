@@ -3,7 +3,7 @@ use crate::{
         AddrReason, AddrResult, Address, HttpResource, access_ctrl::serv::NetAccessCtrl,
         accessor::client::create_http_client_by_ctrl, http::filename_of_url,
     },
-    predule::*,
+    prelude::*,
     types::ResourceDownloader,
     update::{DownloadOptions, HttpMethod, UploadOptions},
 };
@@ -123,7 +123,8 @@ impl HttpAccessor {
         };
 
         let client =
-            create_http_client_by_ctrl(self.ctrl().clone().and_then(|x| x.direct_http_ctrl(&addr)));
+            create_http_client_by_ctrl(self.ctrl().clone().and_then(|x| x.direct_http_ctrl(&addr)))
+                .with(&ctx)?;
         let file_name = filename_of_url(addr.url()).unwrap_or_else(|| "file.bin".to_string());
         ctx.record("local file", file_path.as_ref());
         ctx.record("url ", addr.url().as_str());
@@ -240,7 +241,8 @@ impl HttpAccessor {
             .with_mod_path("addr/http");
         ctx.record("url", addr.url().as_str());
         let client =
-            create_http_client_by_ctrl(self.ctrl().clone().and_then(|x| x.direct_http_ctrl(&addr)));
+            create_http_client_by_ctrl(self.ctrl().clone().and_then(|x| x.direct_http_ctrl(&addr)))
+                .with(&ctx)?;
         let mut request = client.get(addr.url());
         if let (Some(u), Some(p)) = (addr.username(), addr.password()) {
             request = request.basic_auth(u, Some(p));
