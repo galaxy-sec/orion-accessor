@@ -1257,7 +1257,7 @@ dependencies = [
 
 [[package]]
 name = "orion-accessor"
-version = "0.5.1"
+version = "0.5.2"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1320,6 +1320,8 @@ dependencies = [
 [[package]]
 name = "orion-variate"
 version = "0.10.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "82c64bac262b91854fe4ce621bdc004b8b88bf98c75f71affb88dbe35aa30482"
 dependencies = [
  "contracts",
  "derive-getters",

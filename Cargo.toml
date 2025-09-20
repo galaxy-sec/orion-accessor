@@ -2,7 +2,7 @@
 name = "orion-accessor"
 authors = ["wukong<sec-wukong@outlook.com>"]
 edition = "2024"
-version = "0.5.1"
+version = "0.5.2"
 description = "Unified accessor layer for HTTP, Git, and local resources with redirect rules, proxy control, and env-aware templating."
 license = "MIT"
 keywords = ["http", "git", "redirect", "proxy", "update"]
@@ -13,7 +13,7 @@ repository = "https://github.com/galaxy-sec/orion-accessor"
 orion-error = "~0.5"
 orion_conf =  { version = "~0.3", features = ["yaml"]}
 #orion-variate = "~0.10"
-orion-variate = { path = "../orion_variate"}
+orion-variate = "0.10.2"
  #orion_conf = "~0.1"
 #orion_conf = { git = "https://github.com/galaxy-sec/orion-conf.git", tag = "v0.1.5" }
 orion_infra = { git = "https://github.com/galaxy-sec/orion-infra", tag = "v0.4.0" }
