@@ -1257,7 +1257,7 @@ dependencies = [
 
 [[package]]
 name = "orion-accessor"
-version = "0.5.2"
+version = "0.5.3"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1280,9 +1280,9 @@ dependencies = [
  "log",
  "mockito",
  "orion-error",
+ "orion-infra",
  "orion-variate",
  "orion_conf",
- "orion_infra",
  "os_info",
  "reqwest",
  "rstest",
@@ -1315,6 +1315,24 @@ dependencies = [
  "log",
  "serde",
  "thiserror",
+]
+
+[[package]]
+name = "orion-infra"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1b6312e48fe270718cc0757d34d70ddfc4953fa0bed9146a825ed22f2a7b9155"
+dependencies = [
+ "anyhow",
+ "derive_more",
+ "flexi_logger",
+ "log",
+ "orion-error",
+ "orion_conf",
+ "serde",
+ "serde_derive",
+ "thiserror",
+ "toml",
 ]
 
 [[package]]
@@ -1353,24 +1371,6 @@ dependencies = [
  "serde",
  "serde_derive",
  "serde_yaml",
- "thiserror",
- "toml",
-]
-
-[[package]]
-name = "orion_infra"
-version = "0.4.0"
-source = "git+https://github.com/galaxy-sec/orion-infra?tag=v0.4.0#4c0180347805e18deee5e700fd0f9a8bd50387c0"
-dependencies = [
- "anyhow",
- "derive_more",
- "flexi_logger",
- "log",
- "orion-error",
- "orion_conf",
- "scopeguard",
- "serde",
- "serde_derive",
  "thiserror",
  "toml",
 ]
