@@ -6,7 +6,7 @@ version = "0.5.3"
 description = "Unified accessor layer for HTTP, Git, and local resources with redirect rules, proxy control, and env-aware templating."
 license = "MIT"
 keywords = ["http", "git", "redirect", "proxy", "update"]
-categories = ["config", "development-tools::build-utilities", "filesystem", "network-programming"]
+categories = ["config", "network-programming"]
 repository = "https://github.com/galaxy-sec/orion-accessor"
 
 [dependencies]
